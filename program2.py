@@ -10,7 +10,8 @@ def decode_message(secret_message, pattern):
     # Base case: empty secret_message matches an empty pattern
     dp[0][0] = True
     
-    # If the pattern starts with '*', it can match an empty string
+    # If the pattern starts with '*' or has continuous '*' symbols,
+    # it can match an empty secret_message.
     for j in range(1, n + 1):
         if pattern[j - 1] == '*':
             dp[0][j] = dp[0][j - 1]
@@ -27,3 +28,4 @@ def decode_message(secret_message, pattern):
     
     # The result is whether the entire secret_message matches the entire pattern
     return dp[m][n]
+
