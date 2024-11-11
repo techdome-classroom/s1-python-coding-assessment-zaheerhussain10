@@ -1,8 +1,8 @@
 def decode_message(s: str, p: str) -> bool:
     # Initialize two pointers, one for the string and one for the pattern
     i, j = 0, 0
-    star_idx = -1  # Stores the last position of the '*'
-    match = 0  # Index of the last match after '*' is found
+    star_idx = -1  # Last position of '*' in the pattern
+    match = 0  # Last position of the match after '*' is found
     
     while i < len(s):
         if j < len(p) and (p[j] == s[i] or p[j] == '?'):
