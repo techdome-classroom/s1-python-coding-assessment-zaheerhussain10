@@ -21,4 +21,4 @@ def decode_message(s: str, p: str) -> bool:
             elif p[j - 1] == '*':
                 dp[i][j] = dp[i][j - 1] or dp[i - 1][j]  # '*' can match nothing or one/more characters
 
-    return dp[m][n] 
+    return dp[m][n]  # Return if the entire message matches the entire pattern
