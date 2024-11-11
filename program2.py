@@ -1,33 +1,30 @@
 def decode_message(s: str, p: str) -> bool:
-    # Create a memoization table to store results for subproblems
-    memo = {}
+    # Use two pointers to iterate through the string and pattern
+    i, j = 0, 0
+    star_idx = -1  # To remember the position of '*' in pattern
+    match = 0  # To remember the index of the string that matches a '*' in the pattern
 
-    def dp(i, j):
-        # If we have already computed this state, return its result
-        if (i, j) in memo:
-            return memo[(i, j)]
-        
-        # If the pattern is exhausted, check if the string is also exhausted
-        if j == len(p):
-            return i == len(s)
-        
-        # If the string is exhausted but pattern is not
-        if i == len(s):
-            # The pattern must only contain '*' for it to match
-            return all(x == '*' for x in p[j:])
-        
-        # Match the current character
-        if p[j] == s[i] or p[j] == '?':
-            result = dp(i + 1, j + 1)
-        elif p[j] == '*':
-            # Try to match the '*' with different lengths (from 0 to the remaining string length)
-            result = dp(i, j + 1) or dp(i + 1, j)
+    while i < len(s):
+        if j < len(p) and (p[j] == s[i] or p[j] == '?'):
+            # If the current characters match or the pattern has a '?'
+            i += 1
+            j += 1
+        elif j < len(p) and p[j] == '*':
+            # If there's a '*' in the pattern, we remember the position and try matching the rest
+            star_idx = j
+            match = i
+            j += 1
+        elif star_idx != -1:
+            # If there's no direct match and we had a previous '*', we try to match further
+            j = star_idx + 1
+            match += 1
+            i = match
         else:
-            result = False
-        
-        # Memoize the result
-        memo[(i, j)] = result
-        return result
+            return False
 
-    return dp(0, 0)
+    # After finishing the string, check for remaining '*' in the pattern
+    while j < len(p) and p[j] == '*':
+        j += 1
+
+    return j == len(p)
 
