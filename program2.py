@@ -1,29 +1,30 @@
 def decode_message(s: str, p: str) -> bool:
-    # Initialize pointers for the string and pattern
+    # Initialize two pointers, one for the string and one for the pattern
     i, j = 0, 0
-    star_idx = -1  # Position of '*' in the pattern
-    match = 0  # Index of the character in the string to match after '*'
+    star_idx = -1  # Stores the last position of the '*'
+    match = 0  # Index of the last match after '*' is found
     
     while i < len(s):
         if j < len(p) and (p[j] == s[i] or p[j] == '?'):
-            # If the current characters match or the pattern has a '?' (which can match any single character)
+            # Match exact characters or '?' that can match any single character
             i += 1
             j += 1
         elif j < len(p) and p[j] == '*':
-            # If there's a '*' in the pattern, we record its position and try to match the rest
+            # Record the position of '*' and the position in the string where it started matching
             star_idx = j
             match = i
             j += 1
         elif star_idx != -1:
-            # If we had a '*' before, we try to match more characters from the string
+            # Backtrack: the '*' can match more characters
             j = star_idx + 1
             match += 1
             i = match
         else:
             return False
     
-    # If there's any remaining '*' in the pattern, we move the pointer
+    # After the main loop, check if there are remaining '*' in the pattern that can match nothing
     while j < len(p) and p[j] == '*':
         j += 1
     
-    return j == len(p)  # Return True if we have matched the whole pattern
+    # If all characters of the pattern have been matched
+    return j == len(p)
