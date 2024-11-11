@@ -1,30 +1,35 @@
-def decode_message(s: str, p: str) -> bool:
-    # Initialize two pointers, one for the string and one for the pattern
-    i, j = 0, 0
-    star_idx = -1  # Last position of '*' in the pattern
-    match = 0  # Last position of the match after '*' is found
-    
-    while i < len(s):
-        if j < len(p) and (p[j] == s[i] or p[j] == '?'):
-            # Match exact characters or '?' that can match any single character
-            i += 1
-            j += 1
-        elif j < len(p) and p[j] == '*':
-            # Record the position of '*' and the position in the string where it started matching
-            star_idx = j
-            match = i
-            j += 1
-        elif star_idx != -1:
-            # Backtrack: the '*' can match more characters
-            j = star_idx + 1
-            match += 1
-            i = match
-        else:
-            return False
-    
-    # After the main loop, check if there are remaining '*' in the pattern that can match nothing
-    while j < len(p) and p[j] == '*':
-        j += 1
-    
-    # If all characters of the pattern have been matched
-    return j == len(p)
+def decode_message(secret_message, pattern):
+  """
+  Determines if a secret message matches a given pattern with wildcards.
+
+  Args:
+    secret_message: The secret message to match.
+    pattern: The pattern to match against.
+
+  Returns:
+    True if the pattern matches the secret message, False otherwise.
+  """
+
+  m = len(secret_message)
+  n = len(pattern)
+
+  # Create a DP table with (m+1) x (n+1) dimensions
+  dp = [[False] * (n + 1) for _ in range(m + 1)]
+
+  # Base case: Empty pattern can match an empty string
+  dp[0][0] = True
+
+  # Handle patterns starting with '*'
+  for j in range(1, n + 1):
+    if pattern[j - 1] == '*':
+      dp[0][j] = dp[0][j - 1]  # '*' can match an empty string
+
+  # Fill the DP table
+  for i in range(1, m + 1):
+    for j in range(1, n + 1):
+      if pattern[j - 1] == '?' or secret_message[i - 1] == pattern[j - 1]:
+        dp[i][j] = dp[i - 1][j - 1]  # Match or '?'
+      elif pattern[j - 1] == '*':
+        dp[i][j] = dp[i][j - 1] or dp[i - 1][j]  # '*' can match 0 or more characters
+
+  return dp[m][n]
